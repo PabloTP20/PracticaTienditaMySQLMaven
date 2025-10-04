@@ -8,6 +8,7 @@ public class Main {
         // to see how IntelliJ IDEA suggests fixing it.
         System.out.printf("Colaboradores:");
         System.out.printf("Torres Priego Pablo");
+        System.out.printf("Garcia Paredes Jesus Alberto");
 
 
     }

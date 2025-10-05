@@ -3,12 +3,12 @@ package Controller;
 import Model.InventarioModel;
 import Model.VentasModel;
 import View.InventarioView;
-import View.VentasView;
+//import View.VentasView;
 import Model.Venta;
 
 import javax.swing.*;
 import java.util.List;
-
+/*
 public class VentasController {
     private VentasModel model;
     private VentasView view;
@@ -47,7 +47,7 @@ public class VentasController {
 
 
 
-
+*/
 
 
 

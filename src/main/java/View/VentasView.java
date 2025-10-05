@@ -1,5 +1,5 @@
 package View;
-
+/*
 import Controller.VentasController;
 import Model.Producto;
 import Model.Venta;
@@ -87,7 +87,7 @@ public class VentasView {
     }
     public JPanel getMainPanel() { return mainPanel; }
 }
-
+*/
 
 
 

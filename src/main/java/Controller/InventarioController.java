@@ -16,10 +16,8 @@ public class InventarioController {
     public InventarioController() {
         this.model = new InventarioModel();
         this.view = new InventarioView(this);
-        this.model = new InventarioModel();
-        this.view = new InventarioView(this);
 
-        // Configurar todos los eventos aquí (ActionListeners, DocumentListener, MouseListener)
+        // Configurar todos los eventos aquí
         configurarEventos();
 
         actualizarTabla();  // Cargar tabla inicial
@@ -59,7 +57,8 @@ public class InventarioController {
     public void agregarProducto() {
         view.mostrarDialogoAgregarEliminar();
     }
-    // Evento para llenar inventario: lógica de búsqueda y llamada a View para UI
+
+    // Evento para llenar inventario: lógica de búsqueda y llamada a View
     public void llenarInventario() {
         String nombreBuscar = view.pedirNombreProducto();
         if (nombreBuscar == null || nombreBuscar.trim().isEmpty()) {
@@ -72,57 +71,69 @@ public class InventarioController {
         }
         view.mostrarDialogoActualizarCantidad(productoEncontrado);
     }
-    // Procesar agregar: lógica de negocio (llama Model y actualiza View)
+
+
     public void procesarAgregar(String nombre, int cantidad, double precio) {
         if (model.agregarProducto(nombre, cantidad, precio)) {
             view.mostrarMensaje("Éxito", "Producto agregado.", JOptionPane.INFORMATION_MESSAGE);
             actualizarTabla();
         } else {
-            view.mostrarMensaje("Error", "Error al agregar producto.", JOptionPane.ERROR_MESSAGE);
+            view.mostrarMensaje("Error", "Error al agregar producto. Puede que el nombre ya exista o haya un problema de conexión.", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     // Procesar eliminar: lógica de negocio
     public void procesarEliminar(int id) {
-        if (model.eliminarProductoPorId(id)) {
+        if (model.eliminarProducto(id)) { // Corregido el ; extra
             view.mostrarMensaje("Éxito", "Producto eliminado.", JOptionPane.INFORMATION_MESSAGE);
             actualizarTabla();
         } else {
-            view.mostrarMensaje("Error", "ID no encontrado.", JOptionPane.ERROR_MESSAGE);
+            view.mostrarMensaje("Error", "ID no encontrado o error al eliminar.", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     // Procesar actualizar: lógica de negocio
     public void procesarActualizar(String nombre, int nuevaCantidad) {
         if (model.actualizarCantidadPorNombre(nombre, nuevaCantidad)) {
             view.mostrarMensaje("Éxito", "Inventario actualizado.", JOptionPane.INFORMATION_MESSAGE);
             actualizarTabla();
         } else {
-            view.mostrarMensaje("Error", "Error al actualizar.", JOptionPane.ERROR_MESSAGE);
+            view.mostrarMensaje("Error", "Error al actualizar. Producto no encontrado o problema de conexión.", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     // Evento de búsqueda: obtiene datos de View, procesa en Model, actualiza View
     public void buscarProductos() {
         String termino = view.obtenerTerminoBusqueda().toLowerCase();
         List<Producto> filtrados = model.buscarProductosPorTermino(termino);
         view.actualizarTabla(filtrados);
     }
+
     // Evento limpiar búsqueda
     public void limpiarBusqueda() {
         view.limpiarCampoBusqueda();
         actualizarTabla();
     }
+
     // Evento menú eliminar: obtiene selección de View, confirma (via View), procesa
     public void mostrarMenuEliminar() {
         int filaSeleccionada = view.getTablaProductos().getSelectedRow();
         if (filaSeleccionada >= 0) {
-            int idProd = (int) view.getModeloTabla().getValueAt(filaSeleccionada, 0);
-            if (view.mostrarConfirmacion("¿Eliminar el producto con ID " + idProd + "?", "Eliminar")) {
-                procesarEliminar(idProd);
+            Object idValue = view.getModeloTabla().getValueAt(filaSeleccionada, 0);
+            if (idValue instanceof Integer) {
+                int idProd = (int) idValue;
+                if (view.mostrarConfirmacion("¿Eliminar el producto con ID " + idProd + "?", "Eliminar")) {
+                    procesarEliminar(idProd);
+                }
+            } else {
+                view.mostrarMensaje("Error", "No se pudo obtener el ID del producto seleccionado.", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    // Método interno para actualizar tabla
+
+    // Metodo interno para actualizar tabla
     private void actualizarTabla() {
-        List<Producto> productos = model.obtenerTodosProductos();
+        List<Producto> productos = model.obtenerProductos();
         view.actualizarTabla(productos);
     }
     public InventarioView getView() {

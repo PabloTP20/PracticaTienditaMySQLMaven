@@ -3,7 +3,6 @@ package Main;
 import Controller.EmpleadoController;
 import Controller.InventarioController;
 import View.MenuMain;
-import Controller.VentasController;
 import Model.Empleado;
 import Model.EmpleadoModel;
 import Model.InventarioModel;

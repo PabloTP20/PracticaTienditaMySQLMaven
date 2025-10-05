@@ -1,6 +1,6 @@
 package View;
 import Controller.InventarioController;
-import Controller.VentasController;
+//import Controller.VentasController;
 import Controller.EmpleadoController;
 import Model.InventarioModel;
 import Model.EmpleadoModel;
@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 
 public class MenuMain extends JFrame{
     private InventarioController inventarioController;
-    private VentasController ventasController; // Declarar VentasController
+    //private VentasController ventasController; // Declarar VentasController
     private EmpleadoController empleadoController; // Declarar EmpleadoController
     private JPanel panelContenido;
     private InventarioModel inventarioModel; // Instancia de InventarioModel para compartir
@@ -39,15 +39,19 @@ public class MenuMain extends JFrame{
             }
         });
         menuPrincipal.add(menuItemInventario);
+
         // Opción de Ventas
-        JMenuItem menuItemVentas = new JMenuItem("Ventas");
+
+        /*JMenuItem menuItemVentas = new JMenuItem("Ventas");
         menuItemVentas.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mostrarVentas();
             }
         });
-        menuPrincipal.add(menuItemVentas);
+        menuPrincipal.add(menuItemVentas);*/
+
+
         // Opción de Empleados
         JMenuItem menuItemEmpleados = new JMenuItem("Empleados");
         menuItemEmpleados.addActionListener(new ActionListener() {
@@ -81,7 +85,7 @@ public class MenuMain extends JFrame{
         panelContenido.repaint();
     }
     // Metodo para mostrar la vista de Ventas
-    private void mostrarVentas() {
+    /*private void mostrarVentas() {
         if (ventasController == null) {
             // Se pasa el mismo inventarioModel para que Ventas pueda interactuar con el stock
             ventasController = new VentasController(inventarioModel);
@@ -90,7 +94,7 @@ public class MenuMain extends JFrame{
         panelContenido.add(ventasController.getView().getMainPanel(), BorderLayout.CENTER);
         panelContenido.revalidate();
         panelContenido.repaint();
-    }
+    }*/
     // Metodo para mostrar la vista de Empleados
     private void mostrarEmpleados() {
         if (empleadoController == null) {

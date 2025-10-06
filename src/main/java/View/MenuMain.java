@@ -88,10 +88,11 @@ public class MenuMain extends JFrame {
             EmpleadoView view = new EmpleadoView();
             empleadoController = new EmpleadoController(model, view);
         }
-        panelContenido.removeAll();
-        panelContenido.add(empleadoController.getView().getMainPanel(), BorderLayout.CENTER);
-        panelContenido.revalidate();
-        panelContenido.repaint();
+            panelContenido.removeAll();
+            panelContenido.add(empleadoController.getView().getMainPanel(), BorderLayout.CENTER);
+            panelContenido.revalidate();
+            panelContenido.repaint();
+        }
+
     }
-}
 

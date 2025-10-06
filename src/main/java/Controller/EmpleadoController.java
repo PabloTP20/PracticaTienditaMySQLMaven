@@ -6,6 +6,7 @@ import View.EmpleadoView;
 import View.InventarioView;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class EmpleadoController {
     private EmpleadoModel model;
@@ -15,45 +16,56 @@ public class EmpleadoController {
         this.model = model;
         this.view = view;
 
-        // Eventos
         view.getBtnAgregar().addActionListener(e -> agregarEmpleado());
         view.getBtnDespedir().addActionListener(e -> despedirEmpleado());
+
+        cargarLista();
     }
 
     private void agregarEmpleado() {
-        String nombre = JOptionPane.showInputDialog("Ingrese el nombre del empleado:");
+        String nombre = JOptionPane.showInputDialog(view, "Ingrese el nombre:");
         if (nombre == null || nombre.isEmpty()) return;
 
-        String apellido = JOptionPane.showInputDialog( "Ingrese el apellido del empleado:");
+        String apellido = JOptionPane.showInputDialog(view, "Ingrese el apellido:");
         if (apellido == null || apellido.isEmpty()) return;
 
-        String edadStr = JOptionPane.showInputDialog("Ingrese la edad:");
+        String edadStr = JOptionPane.showInputDialog(view, "Ingrese la edad:");
         int edad;
         try {
             edad = Integer.parseInt(edadStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(view.getMainPanel(), "Ingrese una cantidad para Edad");
+            JOptionPane.showMessageDialog(view, "Edad inválida.");
             return;
         }
 
-        String telefono = JOptionPane.showInputDialog("Ingrese el número de teléfono:");
+        String telefono = JOptionPane.showInputDialog(view, "Ingrese el teléfono:");
         if (telefono == null || telefono.isEmpty()) return;
 
         Empleado emp = new Empleado(nombre, apellido, edad, telefono);
         model.agregarEmpleado(emp);
-        view.getModeloLista().addElement(emp.toString());
+        cargarLista();
     }
 
     private void despedirEmpleado() {
         int index = view.getListaEmpleados().getSelectedIndex();
         if (index == -1) {
-            JOptionPane.showMessageDialog(view.getMainPanel(), "Seleccione un empleado para despedir.");
+            JOptionPane.showMessageDialog(view, "Seleccione un empleado para despedir.");
             return;
         }
 
-        model.eliminarEmpleado(index);
-        view.getModeloLista().remove(index);
+        ArrayList<Empleado> empleados = model.obtenerEmpleados();
+        int id = empleados.get(index).getId();
+        model.eliminarEmpleado(id);
+        cargarLista();
     }
+
+    private void cargarLista() {
+        view.getModeloLista().clear();
+        for (Empleado e : model.obtenerEmpleados()) {
+            view.getModeloLista().addElement(e.toString());
+        }
+    }
+
     public EmpleadoView getView() {
         return view;
     }

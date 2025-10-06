@@ -5,7 +5,7 @@ import Model.EmpleadoModel;
 import javax.swing.*;
 import java.awt.*;
 
-public class EmpleadoView {
+public class EmpleadoView extends JPanel {
     private DefaultListModel<String> modeloLista;
     private JList<String> listaEmpleados;
     private JButton btnAgregar;
@@ -13,7 +13,9 @@ public class EmpleadoView {
     private JPanel mainPanel;
 
     public EmpleadoView() {
+        setLayout(new BorderLayout());
         mainPanel = new JPanel(new BorderLayout());
+
         modeloLista = new DefaultListModel<>();
         listaEmpleados = new JList<>(modeloLista);
         btnAgregar = new JButton("Agregar empleado");
@@ -23,10 +25,10 @@ public class EmpleadoView {
         panelBotones.add(btnAgregar);
         panelBotones.add(btnDespedir);
 
-        mainPanel.setLayout(new BorderLayout());
         mainPanel.add(new JScrollPane(listaEmpleados), BorderLayout.CENTER);
         mainPanel.add(panelBotones, BorderLayout.SOUTH);
 
+        add(mainPanel, BorderLayout.CENTER);
     }
 
     public JButton getBtnAgregar() { return btnAgregar; }

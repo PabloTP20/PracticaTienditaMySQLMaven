@@ -41,7 +41,7 @@ public class InventarioModel {
         }
         return productos;
     }
-    // Agregar un nuevo producto (adaptado para recibir parámetros individuales)
+    // Agregar un nuevo producto
     public boolean agregarProducto(String nombre, int cantidad, double precio) {
         try (Connection conn = Db.getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO producto (nombre, cantidad, precio) VALUES (?, ?, ?)")) {
@@ -68,7 +68,6 @@ public class InventarioModel {
             return false;
         }
     }
-
     // Actualizar la cantidad de un producto por su nombre
     public boolean actualizarCantidadPorNombre(String nombre, int nuevaCantidad) {
         try (Connection conn = Db.getConnection();
@@ -83,7 +82,7 @@ public class InventarioModel {
         }
     }
 
-    // Buscar productos por un término en el nombre (para búsqueda en tiempo real)
+    // Buscar productos por un término en el nombre
     public List<Producto> buscarProductosPorTermino(String termino) {
         List<Producto> productos = new ArrayList<>();
         Connection conn = null;
@@ -116,15 +115,16 @@ public class InventarioModel {
         }
         return productos;
     }
-    // Buscar un producto específico por nombre (ya existía, pero lo incluyo para completitud)
+    // Buscar un producto específico por nombre
     public Producto buscarProductoPorNombre(String nombre) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = Db.getConnection();
-            stmt = conn.prepareStatement("SELECT id, nombre, cantidad, precio FROM producto WHERE nombre = ?");
-            stmt.setString(1, nombre);
+            String sql = "SELECT id, nombre, cantidad, precio FROM producto WHERE LOWER(nombre) = LOWER(?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nombre.trim()); // quitamos espacios por si acaso
             rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Producto(
@@ -147,6 +147,7 @@ public class InventarioModel {
         }
         return null;
     }
+
 }
 
 

@@ -1,6 +1,5 @@
 package View;
-/*
-import Controller.VentasController;
+
 import Model.Producto;
 import Model.Venta;
 
@@ -9,21 +8,23 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class VentasView {
-    private VentasController controller;
+public class VentasView extends JPanel {
+
     private JComboBox<String> comboProductos;
     private JTextField txtCantidad;
+    private JButton btnRegistrarVenta;
+    private JButton btnEliminarVenta;
+    private JButton btnRefrescar;
     private JTable tablaVentas;
-    private DefaultTableModel modeloTabla;
-    private JPanel mainPanel;
+    private DefaultTableModel modeloTablaVentas;
 
-    public VentasView(VentasController controller, List<Producto> productos) {
-        mainPanel = new JPanel(new BorderLayout());
-        JPanel panel = new JPanel(new BorderLayout());
+    public VentasView(List<Producto> productos) {
+        setLayout(new BorderLayout(10, 10));
+        setBackground(Color.WHITE);
 
-        // 🔹 Panel superior
-        JPanel panelTop = new JPanel(new GridLayout(3, 2, 10, 10));
-        panelTop.setBorder(BorderFactory.createTitledBorder("Registrar Venta"));
+        JPanel panelSuperior = new JPanel(new GridLayout(3, 2, 10, 10));
+        panelSuperior.setBorder(BorderFactory.createTitledBorder("Registrar nueva venta"));
+        panelSuperior.setBackground(Color.WHITE);
 
         comboProductos = new JComboBox<>();
         for (Producto p : productos) {
@@ -32,62 +33,99 @@ public class VentasView {
 
         txtCantidad = new JTextField();
 
-        JButton btnRegistrar = new JButton("Registrar Venta");
-        JButton btnEliminar = new JButton("Eliminar Venta");
+        btnRegistrarVenta = new JButton("Registrar Venta");
+        btnRegistrarVenta.setBackground(new Color(0, 153, 76));
+        btnRegistrarVenta.setForeground(Color.WHITE);
+        btnRegistrarVenta.setFocusPainted(false);
 
-        panelTop.add(new JLabel("Producto:"));
-        panelTop.add(comboProductos);
-        panelTop.add(new JLabel("Cantidad:"));
-        panelTop.add(txtCantidad);
-        panelTop.add(btnRegistrar);
-        panelTop.add(btnEliminar);
+        btnEliminarVenta = new JButton("Eliminar Venta");
+        btnEliminarVenta.setBackground(new Color(204, 0, 0));
+        btnEliminarVenta.setForeground(Color.WHITE);
+        btnEliminarVenta.setFocusPainted(false);
 
-        // 🔹 Tabla de ventas
-        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Producto", "Cantidad", "Total ($)"}, 0);
-        tablaVentas = new JTable(modeloTabla);
+        btnRefrescar = new JButton("Refrescar Productos");
+        btnRefrescar.setBackground(new Color(0, 102, 204));
+        btnRefrescar.setForeground(Color.WHITE);
+        btnRefrescar.setFocusPainted(false);
 
-        panel.add(panelTop, BorderLayout.NORTH);
-        panel.add(new JScrollPane(tablaVentas), BorderLayout.CENTER);
+        panelSuperior.add(new JLabel("Producto:"));
+        panelSuperior.add(comboProductos);
+        panelSuperior.add(new JLabel("Cantidad:"));
+        panelSuperior.add(txtCantidad);
+        panelSuperior.add(btnRegistrarVenta);
+        panelSuperior.add(btnRefrescar);
 
-        mainPanel.add(panel);
+        add(panelSuperior, BorderLayout.NORTH);
 
-        // 🔹 Eventos
-        btnRegistrar.addActionListener(e -> {
-            String producto = (String) comboProductos.getSelectedItem();
-            int cantidad;
-            try {
-                cantidad = Integer.parseInt(txtCantidad.getText());
-            } catch (NumberFormatException ex) {
-                mostrarMensaje("Error", "Ingrese una cantidad válida", JOptionPane.ERROR_MESSAGE);
-                return;
+        // Tabla de ventas
+        modeloTablaVentas = new DefaultTableModel(new String[]{"ID", "Producto", "Cantidad", "Total ($)"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // La tabla no es editable
             }
-            controller.registrarVenta(producto, cantidad);
-        });
+        };
+        tablaVentas = new JTable(modeloTablaVentas);
+        tablaVentas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaVentas.setRowHeight(25);
+        tablaVentas.getTableHeader().setReorderingAllowed(false);
 
-        btnEliminar.addActionListener(e -> {
-            int fila = tablaVentas.getSelectedRow();
-            if (fila >= 0) {
-                int id = (int) modeloTabla.getValueAt(fila, 0);
-                controller.eliminarVenta(id);
-            } else {
-                mostrarMensaje("Error", "Seleccione una venta para eliminar", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        JScrollPane scrollPane = new JScrollPane(tablaVentas);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Ventas registradas"));
+        add(scrollPane, BorderLayout.CENTER);
+
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelInferior.setBackground(Color.WHITE);
+        panelInferior.add(btnEliminarVenta);
+        add(panelInferior, BorderLayout.SOUTH);
     }
 
-    public void actualizarVentas(List<Venta> ventas) {
-        modeloTabla.setRowCount(0);
+    // Metodo actualizacion
+    public void actualizarTabla(List<Venta> ventas) {
+        modeloTablaVentas.setRowCount(0);
         for (Venta v : ventas) {
-            modeloTabla.addRow(new Object[]{v.getId(), v.getNombreProducto(), v.getCantidadVendida(), v.getTotal()});
+            modeloTablaVentas.addRow(new Object[]{
+                    v.getId(),
+                    v.getNombreProducto(),
+                    v.getCantidadVendida(),
+                    String.format("%.2f", v.getTotal())
+            });
         }
     }
 
-    public void mostrarMensaje(String titulo, String mensaje, int tipo) {
-        JOptionPane.showMessageDialog(mainPanel, mensaje, titulo, tipo);
+    // Metodo getters
+
+    public JComboBox<String> getComboProductos() {
+        return comboProductos;
     }
-    public JPanel getMainPanel() { return mainPanel; }
+
+    public JTextField getTxtCantidad() {
+        return txtCantidad;
+    }
+
+    public JButton getBtnRegistrarVenta() {
+        return btnRegistrarVenta;
+    }
+
+    public JButton getBtnEliminarVenta() {
+        return btnEliminarVenta;
+    }
+
+    public JButton getBtnRefrescar() {
+        return btnRefrescar;
+    }
+
+    public JTable getTablaVentas() {
+        return tablaVentas;
+    }
+
+    public DefaultTableModel getModeloTablaVentas() {
+        return modeloTablaVentas;
+    }
 }
-*/
+
+
+
+
 
 
 

@@ -128,7 +128,7 @@ public class InventarioView{
     }
     // Metodo para pedir input de nombre (diálogo visible)
     public String pedirNombreProducto() {
-        return JOptionPane.showInputDialog(this, "Ingrese el nombre del producto:");
+        return JOptionPane.showInputDialog("Ingrese el nombre del producto:" );
     }
     // Metodo para mostrar diálogo de actualizar cantidad (UI visible, listener interno llama a Controller)
     public void mostrarDialogoActualizarCantidad(Producto producto) {
@@ -136,6 +136,7 @@ public class InventarioView{
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(mainPanel), "Actualizar Inventario - " + producto.getNombre(), true);
         dialog.setSize(250, 150);
         dialog.setLayout(new GridLayout(4, 1, 5, 5));
+        dialog.setLocationRelativeTo(null);
         JLabel lblActual = new JLabel("Cantidad actual: " + producto.getCantidad());
         dialog.add(lblActual);
         JLabel lblNueva = new JLabel("Nueva cantidad:");

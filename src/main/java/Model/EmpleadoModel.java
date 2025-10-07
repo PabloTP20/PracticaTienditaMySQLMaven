@@ -1,5 +1,7 @@
 package Model;
 
+import persistence.Db;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -7,7 +9,7 @@ public class EmpleadoModel {
 
     public void agregarEmpleado(Empleado empleado) {
         String sql = "INSERT INTO empleados (nombre, apellido, edad, telefono) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexionBD.conectar();
+        try (Connection con = Db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, empleado.getNombre());
             ps.setString(2, empleado.getApellido());
@@ -21,7 +23,7 @@ public class EmpleadoModel {
 
     public void eliminarEmpleado(int id) {
         String sql = "DELETE FROM empleados WHERE id = ?";
-        try (Connection con = ConexionBD.conectar();
+        try (Connection con = Db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -33,7 +35,7 @@ public class EmpleadoModel {
     public ArrayList<Empleado> obtenerEmpleados() {
         ArrayList<Empleado> lista = new ArrayList<>();
         String sql = "SELECT * FROM empleados";
-        try (Connection con = ConexionBD.conectar();
+        try (Connection con = Db.getConnection();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {

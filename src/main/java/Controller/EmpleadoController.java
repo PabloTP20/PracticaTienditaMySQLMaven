@@ -18,7 +18,6 @@ public class EmpleadoController {
 
         view.getBtnAgregar().addActionListener(e -> agregarEmpleado());
         view.getBtnDespedir().addActionListener(e -> despedirEmpleado());
-
         cargarLista();
     }
 

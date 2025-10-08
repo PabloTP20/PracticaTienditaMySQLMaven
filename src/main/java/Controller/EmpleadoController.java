@@ -3,65 +3,127 @@ package Controller;
 import Model.Empleado;
 import Model.EmpleadoModel;
 import View.EmpleadoView;
-import View.InventarioView;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class EmpleadoController {
-    private EmpleadoModel model;
-    private EmpleadoView view;
+    private final EmpleadoModel model;
+    private final EmpleadoView view;
 
+    // Constructor
     public EmpleadoController(EmpleadoModel model, EmpleadoView view) {
         this.model = model;
         this.view = view;
 
-        view.getBtnAgregar().addActionListener(e -> agregarEmpleado());
+        // Primero pedimos inicio de sesión
+        if (!iniciarSesion()) {
+            JOptionPane.showMessageDialog(null, "Inicio de sesión cancelado. Cerrando programa.");
+            System.exit(0);
+        }
+
+        // Cargamos lista de empleados
+        cargarEmpleados();
+
+        // Configuramos eventos
+        view.getBtnContratar().addActionListener(e -> contratarEmpleado());
         view.getBtnDespedir().addActionListener(e -> despedirEmpleado());
-        cargarLista();
     }
 
-    private void agregarEmpleado() {
-        String nombre = JOptionPane.showInputDialog(view, "Ingrese el nombre:");
-        if (nombre == null || nombre.isEmpty()) return;
+    // Método de inicio de sesión
+    private boolean iniciarSesion() {
+        String usuario = JOptionPane.showInputDialog(null, "Ingrese su usuario:");
+        if (usuario == null) return false; // usuario canceló
 
-        String apellido = JOptionPane.showInputDialog(view, "Ingrese el apellido:");
-        if (apellido == null || apellido.isEmpty()) return;
+        JPasswordField passwordField = new JPasswordField();
+        int option = JOptionPane.showConfirmDialog(
+                null,
+                passwordField,
+                "Ingrese su contraseña:",
+                JOptionPane.OK_CANCEL_OPTION
+        );
 
-        String edadStr = JOptionPane.showInputDialog(view, "Ingrese la edad:");
+        if (option == JOptionPane.OK_OPTION) {
+            String contrasena = new String(passwordField.getPassword());
+
+            // Aquí podrías validar contra base de datos si lo deseas
+            if (usuario.equals("admin") && contrasena.equals("1234")) {
+                JOptionPane.showMessageDialog(null, "✅ Bienvenido " + usuario);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "❌ Usuario o contraseña incorrectos.");
+                return iniciarSesion(); // vuelve a pedir
+            }
+        } else {
+            return false; // cancelado
+        }
+    }
+
+    // Cargar empleados desde el modelo a la lista visual
+    private void cargarEmpleados() {
+        List<Empleado> empleados = model.obtenerEmpleados();
+        DefaultListModel<String> lista = view.getModeloLista();
+        lista.clear();
+        for (Empleado emp : empleados) {
+            lista.addElement(emp.getId() + " - " + emp.getNombre() + " " + emp.getApellido());
+        }
+    }
+
+    // Contratar nuevo empleado
+    private void contratarEmpleado() {
+        String nombre = view.getTxtNuevoEmpleado().getText().trim();
+
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Ingrese al menos el nombre del empleado.");
+            return;
+        }
+
+        String apellido = JOptionPane.showInputDialog("Ingrese el apellido del empleado:");
+        if (apellido == null || apellido.trim().isEmpty()) return;
+
+        String edadStr = JOptionPane.showInputDialog("Ingrese la edad del empleado:");
+        if (edadStr == null) return;
         int edad;
         try {
             edad = Integer.parseInt(edadStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(view, "Edad inválida.");
+            JOptionPane.showMessageDialog(null, "Edad inválida.");
             return;
         }
 
-        String telefono = JOptionPane.showInputDialog(view, "Ingrese el teléfono:");
-        if (telefono == null || telefono.isEmpty()) return;
+        String telefono = JOptionPane.showInputDialog("Ingrese el teléfono del empleado:");
+        if (telefono == null || telefono.trim().isEmpty()) return;
 
-        Empleado emp = new Empleado(nombre, apellido, edad, telefono);
-        model.agregarEmpleado(emp);
-        cargarLista();
+        Empleado nuevo = new Empleado(0, nombre, apellido, edad, telefono);
+        model.agregarEmpleado(nuevo);
+        cargarEmpleados();
+        view.getTxtNuevoEmpleado().setText("");
+        JOptionPane.showMessageDialog(null, "✅ Empleado contratado con éxito.");
     }
 
+    // Despedir empleado seleccionado
     private void despedirEmpleado() {
-        int index = view.getListaEmpleados().getSelectedIndex();
-        if (index == -1) {
-            JOptionPane.showMessageDialog(view, "Seleccione un empleado para despedir.");
+        String seleccionado = view.getListaEmpleados().getSelectedValue();
+        if (seleccionado == null) {
+            JOptionPane.showMessageDialog(null, "Seleccione un empleado para despedir.");
             return;
         }
 
-        ArrayList<Empleado> empleados = model.obtenerEmpleados();
-        int id = empleados.get(index).getId();
-        model.eliminarEmpleado(id);
-        cargarLista();
-    }
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "¿Seguro que desea despedir a " + seleccionado + "?",
+                "Confirmar despido",
+                JOptionPane.YES_NO_OPTION);
 
-    private void cargarLista() {
-        view.getModeloLista().clear();
-        for (Empleado e : model.obtenerEmpleados()) {
-            view.getModeloLista().addElement(e.toString());
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                // Extrae el ID (parte antes del primer espacio o guion)
+                int id = Integer.parseInt(seleccionado.split(" - ")[0]);
+                model.eliminarEmpleado(id);
+                cargarEmpleados();
+                JOptionPane.showMessageDialog(null, "Empleado despedido correctamente.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "No se pudo identificar el ID del empleado.");
+            }
         }
     }
 
@@ -69,3 +131,6 @@ public class EmpleadoController {
         return view;
     }
 }
+
+
+

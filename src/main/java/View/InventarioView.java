@@ -14,6 +14,7 @@ public class InventarioView{
     private JButton btnAgregar;
     private JButton btnLlenar;
     private JButton btnLimpiar;
+    private JButton btnActualizarPrecio;
     private JPopupMenu menuContextual;
     private JMenuItem itemEliminar;
     private JPanel mainPanel;
@@ -31,9 +32,15 @@ public class InventarioView{
         btnLlenar = new JButton("Llenar Inventario");
         btnLlenar.setBackground(Color.BLUE);
         btnLlenar.setForeground(Color.WHITE);
+        btnActualizarPrecio = new JButton("Actualizar Precio");
+        btnActualizarPrecio.setBackground(Color.GREEN);
+        btnActualizarPrecio.setForeground(Color.WHITE);
+
+        panelOpciones.add(btnActualizarPrecio);
         panelOpciones.add(btnAgregar);
         panelOpciones.add(btnLlenar);
         mainPanel.add(panelOpciones, BorderLayout.NORTH);
+
         // Panel para buscador (visibles, sin listeners)
         JPanel panelBusqueda = new JPanel();
         panelBusqueda.add(new JLabel("Buscar por nombre:"));
@@ -63,6 +70,7 @@ public class InventarioView{
     public JButton getBtnAgregar() { return btnAgregar; }
     public JButton getBtnLlenar() { return btnLlenar; }
     public JButton getBtnLimpiar() { return btnLimpiar; }
+    public JButton getBtnActualizarPrecio() { return btnActualizarPrecio; }
     public JTextField getTxtBusqueda() { return txtBusqueda; }
     public JTable getTablaProductos() { return tablaProductos; }
     public JPopupMenu getMenuContextual() { return menuContextual; }
@@ -176,4 +184,39 @@ public class InventarioView{
     public boolean mostrarConfirmacion(String mensaje, String titulo) {
         return JOptionPane.showConfirmDialog(mainPanel, mensaje, titulo, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
+    public void mostrarDialogoActualizarPrecio(Producto producto) {
+        if (producto == null) return;
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(mainPanel), "Actualizar Precio - " + producto.getNombre(),true);
+        dialog.setSize(300, 150);
+        dialog.setLocationRelativeTo(null);
+        dialog.setLayout(new GridLayout(4, 1, 5, 5));
+        JLabel lblActual = new JLabel("Precio actual: $" + String.format("%.2f", producto.getPrecio()));
+        dialog.add(lblActual);
+        JLabel lblNuevo = new JLabel("Nuevo precio:");
+        dialog.add(lblNuevo);
+        JTextField txtNuevoPrecio = new JTextField();
+        dialog.add(txtNuevoPrecio);
+        JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar.addActionListener(e -> {
+            try {
+                String nuevoPrecioText = txtNuevoPrecio.getText().trim();
+                if (nuevoPrecioText.isEmpty()) {
+                    mostrarMensaje("Error", "El nuevo precio es requerido.", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                double nuevoPrecio = Double.parseDouble(nuevoPrecioText);
+                if (nuevoPrecio < 0) {
+                    mostrarMensaje("Error", "El precio no puede ser negativo.", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                controller.procesarActualizarPrecio(producto.getNombre(), nuevoPrecio);  // Llamar al nuevo método del Controller
+                dialog.dispose();
+            } catch (NumberFormatException ex) {
+                mostrarMensaje("Error", "El precio debe ser un número decimal válido (ej. 19.99).", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        dialog.add(btnActualizar);
+        dialog.setVisible(true);
+    }
+
 }

@@ -81,6 +81,19 @@ public class InventarioModel {
             return false;
         }
     }
+    public boolean actualizarPrecioPorNombre(String nombre, double nuevoPrecio) {
+        try (Connection conn = Db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE producto SET precio = ? WHERE nombre = ?")) {
+            stmt.setDouble(1, nuevoPrecio);
+            stmt.setString(2, nombre);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     // Buscar productos por un término en el nombre
     public List<Producto> buscarProductosPorTermino(String termino) {
@@ -147,6 +160,7 @@ public class InventarioModel {
         }
         return null;
     }
+
 
 }
 

@@ -4,7 +4,7 @@ import Model.AppModel;
 import Model.AuthService;
 import Model.User;
 import View.LoginDialog;
-import View.MenuMain;
+import View.MenuView;
 
 import javax.swing.*;
 import java.util.Optional;
@@ -13,9 +13,9 @@ public class LoginController {
     private final AppModel appModel;
     private final AuthService authService;
     private final LoginDialog loginView;
-    private final MenuMain menuMain;
+    private final MenuView menuMain;
 
-    public LoginController(AppModel appModel, AuthService authService, LoginDialog loginView, MenuMain menuMain) {
+    public LoginController(AppModel appModel, AuthService authService, LoginDialog loginView, MenuView menuMain) {
         this.appModel = appModel;
         this.authService = authService;
         this.loginView = loginView;

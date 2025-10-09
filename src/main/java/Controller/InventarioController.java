@@ -29,6 +29,8 @@ public class InventarioController {
         view.getBtnLlenar().addActionListener(e -> llenarInventario());
         // ActionListener para botón limpiar
         view.getBtnLimpiar().addActionListener(e -> limpiarBusqueda());
+        // Nuevo ActionListener para botón actualizar precio
+        view.getBtnActualizarPrecio().addActionListener(e -> actualizarPrecio());
         // DocumentListener para búsqueda en tiempo real
         view.getTxtBusqueda().getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -102,6 +104,16 @@ public class InventarioController {
         }
     }
 
+    // metodo para procesar actualización de precio: lógica de negocio
+    public void procesarActualizarPrecio(String nombre, double nuevoPrecio) {
+        if (model.actualizarPrecioPorNombre(nombre, nuevoPrecio)) {
+            view.mostrarMensaje("Éxito", "Precio actualizado correctamente.", JOptionPane.INFORMATION_MESSAGE);
+            actualizarTabla();  // Refrescar la tabla para mostrar el nuevo precio
+        } else {
+            view.mostrarMensaje("Error", "Error al actualizar precio. Producto no encontrado o problema de base de datos.", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     // Evento de búsqueda: obtiene datos de View, procesa en Model, actualiza View
     public void buscarProductos() {
         String termino = view.obtenerTerminoBusqueda().toLowerCase();
@@ -135,6 +147,20 @@ public class InventarioController {
     private void actualizarTabla() {
         List<Producto> productos = model.obtenerProductos();
         view.actualizarTabla(productos);
+    }
+
+    // evento para actualizar precio
+    public void actualizarPrecio() {
+        String nombreBuscar = view.pedirNombreProducto();
+        if (nombreBuscar == null || nombreBuscar.trim().isEmpty()) {
+            return;
+        }
+        Producto productoEncontrado = model.buscarProductoPorNombre(nombreBuscar);
+        if (productoEncontrado == null) {
+            view.mostrarMensaje("Error", "Producto no encontrado.", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        view.mostrarDialogoActualizarPrecio(productoEncontrado);
     }
     public InventarioView getView() {
         return view;

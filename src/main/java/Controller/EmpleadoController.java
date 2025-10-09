@@ -30,7 +30,7 @@ public class EmpleadoController {
         view.getBtnDespedir().addActionListener(e -> despedirEmpleado());
     }
 
-    // Método de inicio de sesión
+    // Metodo de inicio de sesión
     private boolean iniciarSesion() {
         String usuario = JOptionPane.showInputDialog(null, "Ingrese su usuario:");
         if (usuario == null) return false; // usuario canceló
@@ -65,7 +65,7 @@ public class EmpleadoController {
         DefaultListModel<String> lista = view.getModeloLista();
         lista.clear();
         for (Empleado emp : empleados) {
-            lista.addElement(emp.getId() + " - " + emp.getNombre() + " " + emp.getApellido());
+            lista.addElement(emp.getId() + " - " + emp.getNombre() + " " + emp.getApellido()+ "{Edad:"+emp.getEdad()+", Telefono:"+emp.getTelefono()+"}");
         }
     }
 

@@ -1,15 +1,13 @@
 package Main;
 
-import View.MenuMain;
-
 import javax.swing.*;
+import Controller.MenuController;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()-> {
 
-            MenuMain menuView = new MenuMain();
-            menuView.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            MenuController menuController = new MenuController();
         });
 
     }
